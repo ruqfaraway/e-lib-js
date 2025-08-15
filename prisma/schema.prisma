@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id              Int      @id @default(autoincrement())
+  name            String
+  username        String   @unique
+  password        String
+  address         String
+  phoneNumber     String
+  email           String   @unique
+  nationalId      String?
+  dateOfBirth     DateTime?
+  emergencyContact String?
+  role            Role     @default(ANGGOTA)
+  borrowings      Borrowing[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Book {
+  id           Int       @id @default(autoincrement())
+  title        String
+  stock        Int
+  category     String?
+  language     String?
+  description  String?
+  coverImage   String?
+  locationCode String?
+  publishYear  Int?
+  isbn         String?   @unique
+  // Relasi
+  authorId     Int
+  author       Author    @relation(fields: [authorId], references: [id])
+  publisherId  Int
+  publisher    Publisher @relation(fields: [publisherId], references: [id])
+  borrowings   Borrowing[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Author {
+  id        Int      @id @default(autoincrement())
+  name      String
+  bio       String?
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Publisher {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String?
+  contact   String?
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Borrowing {
+  id             Int       @id @default(autoincrement())
+  userId         Int
+  bookId         Int
+  borrowDate     DateTime  @default(now())
+  dueDate        DateTime
+  returnDate     DateTime?
+  status         BorrowStatus @default(DIPINJAM)
+  fine           Float?
+  notes          String?
+
+  // Relasi
+  user           User      @relation(fields: [userId], references: [id])
+  book           Book      @relation(fields: [bookId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum BorrowStatus {
+  DIPINJAM
+  DIKEMBALIKAN
+  TERLAMBAT
+}
+
+enum Role {
+  ADMIN
+  PETUGAS
+  ANGGOTA
+}
