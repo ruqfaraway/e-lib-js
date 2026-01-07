@@ -1,12 +1,24 @@
-import { Button, Flex, Form, Input, InputNumber, message, Select, Typography } from "antd";
+import SquareUploadImage from "@/components/UploadImage/UploadImage";
+import prisma from "@/lib/prisma";
+import {
+  Button,
+  Flex,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Select,
+  Typography,
+} from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 
 const AddBooks = ({ author, publisher }) => {
   const router = useRouter();
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [imageUrl, setImageUrl] = useState();
   const handleOnFinish = async (values) => {
     return await axios
       .request({
@@ -24,6 +36,27 @@ const AddBooks = ({ author, publisher }) => {
         messageApi.error("Failed to create book");
         console.error("Error:", error);
       });
+  };
+
+  const handleUpload = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const response = await axios.request({
+        url: "/api/upload",
+        method: "POST",
+        data: formData,
+      });
+      if (response.status === 200) {
+        const imageUrl = response.data.url;
+        form.setFieldValue("coverImage", imageUrl);
+        setImageUrl(imageUrl);
+        messageApi.success("Upload successful");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      messageApi.error("Upload failed");
+    }
   };
   return (
     <>
@@ -94,11 +127,16 @@ const AddBooks = ({ author, publisher }) => {
         <Form.Item
           label="Stok"
           name="stock"
-          rules={[
-            { required: true, message: "Please input your stock!" },
-          ]}
+          rules={[{ required: true, message: "Please input your stock!" }]}
         >
           <InputNumber />
+        </Form.Item>
+        <Form.Item
+          label="Cover Image"
+          name="coverImage"
+          rules={[{ required: true, message: "Please input your image!" }]}
+        >
+          <SquareUploadImage imageUrl={imageUrl} onReadyUpload={handleUpload} />
         </Form.Item>
         <Form.Item wrapperCol={{ span: 16 }}>
           <Flex justify="end" gap="middle">

@@ -50,7 +50,7 @@ const LayoutComps = ({ children }) => {
             fontWeight: "bold",
           }}
         >
-          My Personal Library
+          SIPUT
         </Typography.Text>
         <Menu
           theme="dark"
@@ -73,9 +73,9 @@ const LayoutComps = ({ children }) => {
             }}
           >
             <Typography.Text
-              style={{ fontSize: 24, color: "turquoise", fontWeight: "bold" }}
+              style={{ fontSize: 24, color: "black", fontWeight: "bold" }}
             >
-              PERPUSTAKAAN KAMPUNG MELAYU
+              SDN 4 TLAHAB LOR
             </Typography.Text>
             <Avatar size={32} icon={<UserOutlined />} />
           </div>

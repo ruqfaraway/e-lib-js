@@ -122,7 +122,6 @@ export const getStaticProps = async () => {
     publisher: book.publisher.name,
     category: book.category,
   }));
-  // console.log(formattedBooks, "ini books");
   return {
     props: { books: formattedBooks },
     revalidate: 10,

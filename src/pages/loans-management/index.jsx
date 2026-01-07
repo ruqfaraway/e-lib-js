@@ -106,7 +106,6 @@ export const getStaticProps = async () => {
       : null,
     status: data.status,
   }));
-  console.log(borrowsData, "ini books");
   return {
     props: { dataSource: borrowsData },
     revalidate: 10,
